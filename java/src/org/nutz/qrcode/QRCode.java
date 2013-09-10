@@ -138,11 +138,14 @@ public final class QRCode {
      * @param qrcodeFile
      *            QRCode 图片生成的指定的文件
      * @param appendFile
-     *            需要添加的图片
+     *            需要添加的图片。传入的文件路径如果没有（null 或者为空）的时候将忽略该参数
      * 
      * @return QRCode 处理器
      */
     public QRCode toFile(String qrcodeFile, String appendFile) {
+        if (null == appendFile || appendFile.length() == 0) {
+            return toFile(new File(qrcodeFile));
+        }
         return toFile(new File(qrcodeFile), new File(appendFile));
     }
 
@@ -152,11 +155,14 @@ public final class QRCode {
      * @param qrcodeFile
      *            QRCode 图片生成的指定的文件
      * @param appendFile
-     *            需要添加的图片
+     *            需要添加的图片。传入的图片不存在的时候将忽略该参数
      * 
      * @return QRCode 处理器
      */
     public QRCode toFile(File qrcodeFile, File appendFile) {
+        if (null == appendFile || !appendFile.isFile() || appendFile.length() == 0) {
+            return toFile(qrcodeFile);
+        }
         try {
             if (!qrcodeFile.exists()) {
                 qrcodeFile.getParentFile().mkdirs();
