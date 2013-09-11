@@ -101,7 +101,7 @@ public final class QRCode {
      * @return QRCode 处理器
      */
     public QRCode toFile(String f) {
-        return toFile(new File(f));
+        return toFile(new File(f), this.format.getIcon());
     }
 
     /**
@@ -113,23 +113,7 @@ public final class QRCode {
      * @return QRCode 处理器
      */
     public QRCode toFile(File qrcodeFile) {
-        try {
-            if (!qrcodeFile.exists()) {
-                qrcodeFile.getParentFile().mkdirs();
-                qrcodeFile.createNewFile();
-            }
-
-            if (!ImageIO.write(this.qrcodeImage,
-                               getSuffixName(qrcodeFile),
-                               qrcodeFile)) {
-                throw new RuntimeException();
-            }
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        this.qrcodeFile = qrcodeFile;
-        return this;
+        return toFile(qrcodeFile, this.format.getIcon());
     }
 
     /**
@@ -160,16 +144,16 @@ public final class QRCode {
      * @return QRCode 处理器
      */
     public QRCode toFile(File qrcodeFile, File appendFile) {
-        if (null == appendFile || !appendFile.isFile() || appendFile.length() == 0) {
-            return toFile(qrcodeFile);
-        }
         try {
             if (!qrcodeFile.exists()) {
                 qrcodeFile.getParentFile().mkdirs();
                 qrcodeFile.createNewFile();
             }
 
-            appendImage(this.qrcodeImage, ImageIO.read(appendFile), this.format);
+            if (null != appendFile && appendFile.isFile() && appendFile.length() != 0) {
+                appendImage(this.qrcodeImage, ImageIO.read(appendFile), this.format);
+            }
+
             if (!ImageIO.write(this.qrcodeImage,
                                getSuffixName(qrcodeFile),
                                qrcodeFile)) {
