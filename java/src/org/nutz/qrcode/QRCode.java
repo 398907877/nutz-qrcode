@@ -1,5 +1,6 @@
 package org.nutz.qrcode;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
@@ -151,7 +152,7 @@ public final class QRCode {
             }
 
             if (null != appendFile && appendFile.isFile() && appendFile.length() != 0) {
-                appendImage(this.qrcodeImage, ImageIO.read(appendFile), this.format);
+                appendImage(this.qrcodeImage, ImageIO.read(appendFile), this.format.getBackGroundColor());
             }
 
             if (!ImageIO.write(this.qrcodeImage,
@@ -169,14 +170,14 @@ public final class QRCode {
 
     private void appendImage(BufferedImage baseImage,
                              BufferedImage appendImage,
-                             QRCodeFormat format) {
+                             Color backGroundColor) {
         Graphics gc = baseImage.getGraphics();
         gc.drawImage(appendImage,
                      (baseImage.getWidth() - appendImage.getWidth()) / 2,
                      (baseImage.getHeight() - appendImage.getHeight()) / 2,
                      appendImage.getWidth(),
                      appendImage.getHeight(),
-                     format.getBackGroundColor(),
+                     backGroundColor,
                      null);
     }
 
