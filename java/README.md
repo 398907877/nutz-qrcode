@@ -65,7 +65,8 @@ QRCode qrcode = QRCode.NEW("this's simple test text by used format.", format);
 ```java
 QRCode qrcode = QRCode.NEW("this's simple test text. and add icon file.");
 
-// 在指定路径的文件中生成 QRCode 的图片，以及需要添加的 icon 的图片路径
+// 在指定路径的文件中生成 QRCode 的图片，以及需要添加的 icon 的图片路径。（添加的图片不支持 ico 格式）
+// 指定的 icon 的图片不存在时将不会在 QRCode 中添加图片
 String filePath = "/PATH/TO/FILE";
 String iconFilePath = "/PATH/TO/ICON_FILE";
 qrcode.toFile(filePath, iconFilePath);
@@ -74,7 +75,15 @@ qrcode.toFile(filePath, iconFilePath);
 File file = new File(filePath);
 File iconFile = new File(iconFilePath);
 qrcode.toFile(file, iconFile);
+
+// 或者使用生成器格式来设置
+QRCodeFormat format = QRCodeFormat.NEW().setIcon(new File(iconFilePath));
+QRCode qrcode = QRCode.NEW("this's simple test text. and add icon file form format.", format);
+File file = new File(filePath);
+qrcode.toFile(file, iconFile);
 ```
+
+如果直接指定了添加的 icon 文件的时候，将忽略生成器格式中的 icon 文件。
 
 为了保证生成的 QRCode 的图片能被正确识别，请按需设置 QRCode 的图片大小，以及 icon 图片的大小。
 
