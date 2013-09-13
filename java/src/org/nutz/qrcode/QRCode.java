@@ -1,7 +1,10 @@
 package org.nutz.qrcode;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -171,14 +174,25 @@ public final class QRCode {
     private void appendImage(BufferedImage baseImage,
                              BufferedImage appendImage,
                              Color backGroundColor) {
+        int roundRectWidth = appendImage.getWidth();
+        int roundRectHeight = appendImage.getHeight();
+        BufferedImage roundRect = new BufferedImage(roundRectWidth, roundRectHeight, BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g2 = roundRect.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(Color.WHITE);
+        g2.fillRoundRect(0, 0, roundRectWidth, roundRectHeight, 27, 27);
+        g2.setComposite(AlphaComposite.SrcAtop);
+        g2.drawImage(appendImage, 0, 0, null);
+        g2.dispose();
+
         Graphics gc = baseImage.getGraphics();
-        gc.drawImage(appendImage,
-                     (baseImage.getWidth() - appendImage.getWidth()) / 2,
-                     (baseImage.getHeight() - appendImage.getHeight()) / 2,
-                     appendImage.getWidth(),
-                     appendImage.getHeight(),
-                     backGroundColor,
+        gc.setColor(backGroundColor);
+        gc.drawImage(roundRect,
+                     (baseImage.getWidth() - roundRectWidth) / 2,
+                     (baseImage.getHeight() - roundRectHeight) / 2,
                      null);
+        gc.dispose();
     }
 
     /**
