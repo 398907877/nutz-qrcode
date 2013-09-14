@@ -155,12 +155,10 @@ public final class QRCode {
             }
 
             if (null != appendFile && appendFile.isFile() && appendFile.length() != 0) {
-                appendImage(this.qrcodeImage, ImageIO.read(appendFile), this.format.getBackGroundColor());
+                appendImage(ImageIO.read(appendFile));
             }
 
-            if (!ImageIO.write(this.qrcodeImage,
-                               getSuffixName(qrcodeFile),
-                               qrcodeFile)) {
+            if (!ImageIO.write(this.qrcodeImage, getSuffixName(qrcodeFile), qrcodeFile)) {
                 throw new RuntimeException("Unexpected error writing image");
             }
         }
@@ -171,11 +169,19 @@ public final class QRCode {
         return this;
     }
 
-    private void appendImage(BufferedImage baseImage,
-                             BufferedImage appendImage,
-                             Color backGroundColor) {
-        int roundRectWidth = appendImage.getWidth();
-        int roundRectHeight = appendImage.getHeight();
+    private void appendImage(BufferedImage appendImage) {
+        int baseWidth = this.qrcodeImage.getWidth();
+        int baseHeight = this.qrcodeImage.getHeight();
+
+        // 计算 icon 的最大边长
+        // 公式为 二维码面积*错误修正等级*0.4 的开方
+        int maxWidth = (int) Math.sqrt(baseWidth * baseHeight * this.format.getErrorCorrectionLevelValue() * 0.4);
+        int maxHeight = maxWidth;
+
+        // 获取 icon 的实际边长
+        int roundRectWidth = (maxWidth < appendImage.getWidth()) ? maxWidth : appendImage.getWidth();
+        int roundRectHeight = (maxHeight < appendImage.getHeight()) ? maxHeight : appendImage.getWidth();
+
         BufferedImage roundRect = new BufferedImage(roundRectWidth, roundRectHeight, BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D g2 = roundRect.createGraphics();
@@ -183,14 +189,14 @@ public final class QRCode {
         g2.setColor(Color.WHITE);
         g2.fillRoundRect(0, 0, roundRectWidth, roundRectHeight, 27, 27);
         g2.setComposite(AlphaComposite.SrcAtop);
-        g2.drawImage(appendImage, 0, 0, null);
+        g2.drawImage(appendImage, 0, 0, roundRectWidth, roundRectHeight, null);
         g2.dispose();
 
-        Graphics gc = baseImage.getGraphics();
-        gc.setColor(backGroundColor);
+        Graphics gc = this.qrcodeImage.getGraphics();
+        gc.setColor(this.format.getBackGroundColor());
         gc.drawImage(roundRect,
-                     (baseImage.getWidth() - roundRectWidth) / 2,
-                     (baseImage.getHeight() - roundRectHeight) / 2,
+                     (baseWidth - roundRectWidth) / 2,
+                     (baseHeight - roundRectHeight) / 2,
                      null);
         gc.dispose();
     }
@@ -237,9 +243,7 @@ public final class QRCode {
         int height = matrix.getHeight();
         int fgColor = format.getForeGroundColor().getRGB();
         int bgColor = format.getBackGroundColor().getRGB();
-        BufferedImage image = new BufferedImage(width,
-                                                height,
-                                                ColorSpace.TYPE_RGB);
+        BufferedImage image = new BufferedImage(width, height, ColorSpace.TYPE_RGB);
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 image.setRGB(x, y, matrix.get(x, y) ? fgColor : bgColor);
@@ -257,8 +261,7 @@ public final class QRCode {
      * @return QRCode 中的内容
      */
     public static String from(String qrcodeFile) {
-        if (qrcodeFile.startsWith("http://")
-            || qrcodeFile.startsWith("https://")) {
+        if (qrcodeFile.startsWith("http://") || qrcodeFile.startsWith("https://")) {
             try {
                 return from(new URL(qrcodeFile));
             }

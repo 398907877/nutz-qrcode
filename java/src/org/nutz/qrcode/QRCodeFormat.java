@@ -23,6 +23,9 @@ public class QRCodeFormat {
     /** 错误修正等级 (Error Collection Level) */
     private ErrorCorrectionLevel errorCorrectionLevel;
 
+    /** 错误修正等级的具体值 */
+    private double errorCorrectionLevelValue;
+
     /** 前景色 */
     private Color foreGroundColor;
 
@@ -64,6 +67,7 @@ public class QRCodeFormat {
         this.size = 256;
         this.encode = "UTF-8";
         this.errorCorrectionLevel = ErrorCorrectionLevel.M;
+        this.errorCorrectionLevelValue = 0.15;
         this.foreGroundColor = Color.BLACK;
         this.backGroundColor = Color.WHITE;
         this.imageFormat = "png";
@@ -125,6 +129,15 @@ public class QRCodeFormat {
     }
 
     /**
+     * 返回错误修正等级的具体值。
+     * 
+     * @return 错误修正等级的具体值
+     */
+    public double getErrorCorrectionLevelValue() {
+        return errorCorrectionLevelValue;
+    }
+
+    /**
      * 设置错误修正等级。其定义如下
      * 
      * <ul>
@@ -143,15 +156,19 @@ public class QRCodeFormat {
         switch (Character.toUpperCase(errorCorrectionLevel)) {
         case 'L':
             this.errorCorrectionLevel = ErrorCorrectionLevel.L;
+            this.errorCorrectionLevelValue = 0.07;
             break;
         case 'M':
             this.errorCorrectionLevel = ErrorCorrectionLevel.M;
+            this.errorCorrectionLevelValue = 0.15;
             break;
         case 'Q':
             this.errorCorrectionLevel = ErrorCorrectionLevel.Q;
+            this.errorCorrectionLevelValue = 0.25;
             break;
         case 'H':
             this.errorCorrectionLevel = ErrorCorrectionLevel.H;
+            this.errorCorrectionLevelValue = 0.3;
             break;
         default:
             this.errorCorrectionLevel = ErrorCorrectionLevel.M;
