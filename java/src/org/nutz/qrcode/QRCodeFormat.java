@@ -65,7 +65,7 @@ public class QRCodeFormat {
 
     private QRCodeFormat() {
         this.size = 256;
-        this.encode = "UTF-8";
+        this.encode = "utf-8";
         this.errorCorrectionLevel = ErrorCorrectionLevel.M;
         this.errorCorrectionLevelValue = 0.15;
         this.foreGroundColor = Color.BLACK;
