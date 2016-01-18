@@ -4,7 +4,7 @@
 
 	<groupId>org.nutz</groupId>
 	<artifactId>nutz-qrcode</artifactId>
-	<version>1.b.53</version>
+	<version>1.r.54</version>
 	<packaging>jar</packaging>
 
 	<name>nutz-qrcode</name>

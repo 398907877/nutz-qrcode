@@ -31,7 +31,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 
 /**
  * QRCode 处理器
- * 
+ *
  * @author ywjno(ywjno.dev@gmail.com)
  */
 public final class QRCode {
@@ -47,7 +47,7 @@ public final class QRCode {
 
     /**
      * 返回生成的 QRCode 图像对象
-     * 
+     *
      * @return 生成的 QRCode 图像对象
      */
     public BufferedImage getQrcodeImage() {
@@ -56,7 +56,7 @@ public final class QRCode {
 
     /**
      * 返回生成的 QRCode 图片文件
-     * 
+     *
      * @return 生成的 QRCode 图片文件
      */
     public File getQrcodeFile() {
@@ -69,10 +69,10 @@ public final class QRCode {
 
     /**
      * 使用带默认值的「QRCode 生成器格式」来创建一个 QRCode 处理器。
-     * 
+     *
      * @param content
      *            所要生成 QRCode 的内容
-     * 
+     *
      * @return QRCode 处理器
      */
     public static QRCode NEW(final String content) {
@@ -81,12 +81,12 @@ public final class QRCode {
 
     /**
      * 使用指定的「QRCode 生成器格式」来创建一个 QRCode 处理器。
-     * 
+     *
      * @param content
      *            所要生成 QRCode 的内容
      * @param format
      *            QRCode 生成器格式
-     * 
+     *
      * @return QRCode 处理器
      */
     public static QRCode NEW(final String content, QRCodeFormat format) {
@@ -98,10 +98,10 @@ public final class QRCode {
 
     /**
      * 把指定的内容生成为一个 QRCode 的图片，之后保存到指定的文件中。
-     * 
+     *
      * @param f
      *            指定的文件
-     * 
+     *
      * @return QRCode 处理器
      */
     public QRCode toFile(String f) {
@@ -110,10 +110,10 @@ public final class QRCode {
 
     /**
      * 把指定的内容生成为一个 QRCode 的图片，之后保存到指定的文件中。
-     * 
+     *
      * @param qrcodeFile
      *            指定的文件
-     * 
+     *
      * @return QRCode 处理器
      */
     public QRCode toFile(File qrcodeFile) {
@@ -122,12 +122,12 @@ public final class QRCode {
 
     /**
      * 把指定的内容生成为一个 QRCode 的图片，并在该图片中间添加上指定的图片；之后保存到指定的文件内。
-     * 
+     *
      * @param qrcodeFile
      *            QRCode 图片生成的指定的文件
      * @param appendFile
      *            需要添加的图片。传入的文件路径如果没有（null 或者为空）的时候将忽略该参数
-     * 
+     *
      * @return QRCode 处理器
      */
     public QRCode toFile(String qrcodeFile, String appendFile) {
@@ -139,12 +139,12 @@ public final class QRCode {
 
     /**
      * 把指定的内容生成为一个 QRCode 的图片，并在该图片中间添加上指定的图片；之后保存到指定的文件内。
-     * 
+     *
      * @param qrcodeFile
      *            QRCode 图片生成的指定的文件
      * @param appendFile
      *            需要添加的图片。传入的图片不存在的时候将忽略该参数
-     * 
+     *
      * @return QRCode 处理器
      */
     public QRCode toFile(File qrcodeFile, File appendFile) {
@@ -170,17 +170,21 @@ public final class QRCode {
     }
 
     private void appendImage(BufferedImage appendImage) {
-        int baseWidth = this.qrcodeImage.getWidth();
-        int baseHeight = this.qrcodeImage.getHeight();
+        appendImage(this.qrcodeImage, appendImage, this.format);
+    }
+
+    private static void appendImage(BufferedImage qrcodeImage, BufferedImage appendImage, QRCodeFormat format) {
+        int baseWidth = qrcodeImage.getWidth();
+        int baseHeight = qrcodeImage.getHeight();
 
         // 计算 icon 的最大边长
         // 公式为 二维码面积*错误修正等级*0.4 的开方
-        int maxWidth = (int) Math.sqrt(baseWidth * baseHeight * this.format.getErrorCorrectionLevelValue() * 0.4);
+        int maxWidth = (int) Math.sqrt(baseWidth * baseHeight * format.getErrorCorrectionLevelValue() * 0.4);
         int maxHeight = maxWidth;
 
         // 获取 icon 的实际边长
         int roundRectWidth = (maxWidth < appendImage.getWidth()) ? maxWidth : appendImage.getWidth();
-        int roundRectHeight = (maxHeight < appendImage.getHeight()) ? maxHeight : appendImage.getWidth();
+        int roundRectHeight = (maxHeight < appendImage.getHeight()) ? maxHeight : appendImage.getHeight();
 
         BufferedImage roundRect = new BufferedImage(roundRectWidth, roundRectHeight, BufferedImage.TYPE_INT_ARGB);
 
@@ -192,21 +196,18 @@ public final class QRCode {
         g2.drawImage(appendImage, 0, 0, roundRectWidth, roundRectHeight, null);
         g2.dispose();
 
-        Graphics gc = this.qrcodeImage.getGraphics();
-        gc.setColor(this.format.getBackGroundColor());
-        gc.drawImage(roundRect,
-                     (baseWidth - roundRectWidth) / 2,
-                     (baseHeight - roundRectHeight) / 2,
-                     null);
+        Graphics gc = qrcodeImage.getGraphics();
+        gc.setColor(format.getBackGroundColor());
+        gc.drawImage(roundRect, (baseWidth - roundRectWidth) / 2, (baseHeight - roundRectHeight) / 2, null);
         gc.dispose();
     }
 
     /**
      * 使用带默认值的「QRCode 生成器格式」，把指定的内容生成为一个 QRCode 的图像对象。
-     * 
+     *
      * @param content
      *            所需生成 QRCode 的内容
-     * 
+     *
      * @return QRCode 的图像对象
      */
     public static BufferedImage toQRCode(String content) {
@@ -215,10 +216,11 @@ public final class QRCode {
 
     /**
      * 使用指定的「QRCode生成器格式」，把指定的内容生成为一个 QRCode 的图像对象。
-     * 
+     *
      * @param content
      *            所需生成 QRCode 的内容
-     * 
+     * @param format
+     *            QRCode 生成器格式
      * @return QRCode 的图像对象
      */
     public static BufferedImage toQRCode(String content, QRCodeFormat format) {
@@ -249,15 +251,29 @@ public final class QRCode {
                 image.setRGB(x, y, matrix.get(x, y) ? fgColor : bgColor);
             }
         }
+
+        File appendFile = format.getIcon();
+        if (null != appendFile && appendFile.isFile() && appendFile.length() != 0) {
+            BufferedImage appendImage = null;
+            try {
+                appendImage = ImageIO.read(appendFile);
+            }
+            catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            appendImage(image, appendImage, format);
+        }
+
         return image;
     }
 
     /**
      * 从指定的 QRCode 图片文件中解析出其内容。
-     * 
+     *
      * @param qrcodeFile
      *            QRCode 文件
-     * 
+     *
      * @return QRCode 中的内容
      */
     public static String from(String qrcodeFile) {
@@ -275,10 +291,10 @@ public final class QRCode {
 
     /**
      * 从指定的 QRCode 图片文件中解析出其内容。
-     * 
+     *
      * @param qrcodeFile
      *            QRCode 图片文件
-     * 
+     *
      * @return QRCode 中的内容
      */
     public static String from(File qrcodeFile) {
@@ -293,10 +309,10 @@ public final class QRCode {
 
     /**
      * 从指定的 QRCode 图片链接中解析出其内容。
-     * 
+     *
      * @param qrcodeUrl
      *            QRCode 图片链接
-     * 
+     *
      * @return QRCode 中的内容
      */
     public static String from(URL qrcodeUrl) {
@@ -311,10 +327,10 @@ public final class QRCode {
 
     /**
      * 从指定的 QRCode 图像对象中解析出其内容。
-     * 
+     *
      * @param qrcodeImage
      *            QRCode 图像对象
-     * 
+     *
      * @return QRCode 中的内容
      */
     public static String from(BufferedImage qrcodeImage) {
